@@ -5,6 +5,7 @@ const LINKS = [
   { to: '/', label: 'Dashboard' },
   { to: '/research', label: 'Research' },
   { to: '/benchmarks', label: 'Benchmarks' },
+  { to: '/bulk-generate', label: 'Bulk Generate' },
 ];
 
 export function TopNav() {

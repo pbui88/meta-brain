@@ -107,6 +107,7 @@ export function getBenchmarks() {
 
 export function generateAdFromPattern(args: {
   marketCity: string;
+  marketState?: string;
   marketRadiusMiles: number;
   hookPattern: string;
   offerPattern: string;
@@ -118,4 +119,12 @@ export function generateAdFromPattern(args: {
     method: 'POST',
     body: JSON.stringify(args),
   });
+}
+
+export function listGeneratedAds() {
+  return request<GeneratedAd[]>('/generatedAds');
+}
+
+export function deleteGeneratedAd(id: string) {
+  return request<{ success: true }>(`/generatedAds?id=${id}`, { method: 'DELETE' });
 }

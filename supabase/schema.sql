@@ -159,6 +159,7 @@ create table if not exists generated_ads (
   id uuid primary key default gen_random_uuid(),
   campaign_template_id uuid references campaign_templates (id) on delete set null,
   market_city text,
+  market_state text,
   market_radius_miles numeric,
   hook_pattern text,
   offer_pattern text,
@@ -171,6 +172,9 @@ create table if not exists generated_ads (
   source_pattern_ids jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
+
+create index if not exists idx_generated_ads_market_city_state
+  on generated_ads (market_city, market_state);
 
 -- =========================================================
 -- updated_at trigger for campaign_templates

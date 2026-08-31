@@ -10,6 +10,7 @@ const jsonResponse = (statusCode: number, body: unknown) => ({
 
 interface GeneratePayload {
   marketCity: string;
+  marketState?: string;
   marketRadiusMiles: number;
   hookPattern: string;
   offerPattern: string;
@@ -26,8 +27,16 @@ interface GeneratedAdBody {
   lead_form_questions: Array<{ question: string; type: string }>;
 }
 
-const SYSTEM_PROMPT = `You write Meta (Facebook/Instagram) ad copy for wholesale real estate investors targeting
-motivated single-family home sellers. You must comply with Meta's Special Ad Category (HOUSING) policy:
+const SYSTEM_PROMPT = `You write Meta (Facebook/Instagram) ad copy for real estate investors targeting
+motivated single-family home sellers. The offer pattern may describe different buyer programs:
+- "Cash offer" style patterns: a direct cash purchase, fast close, as-is condition.
+- "Retail buyer program" style patterns: the seller's home is marketed to retail (owner-occupant) buyers to
+  net a higher price than a cash investor offer, typically with more flexible timing.
+- "Novation" style patterns: the investor makes light repairs/improvements and lists the home on the seller's
+  behalf via a novation agreement, splitting the increased sale proceeds with the seller.
+Adapt the copy's claims and CTA to whichever buyer program the offer pattern describes; never claim a cash-only
+close speed for a retail or novation offer, and never imply a retail sale price for a cash offer.
+You must comply with Meta's Special Ad Category (HOUSING) policy:
 - Never reference personal attributes or financial distress (e.g. "behind on your mortgage", "struggling
   financially", "foreclosure", "bad credit", "divorce", "bankruptcy", "eviction"). Focus on the PROPERTY and
   the OFFER, not the seller's personal situation.
@@ -64,7 +73,8 @@ export const handler: Handler = async (event: HandlerEvent) => {
     });
   }
 
-  const userPrompt = `Market: ${body.marketCity}, ${body.marketRadiusMiles || 20}-mile radius.
+  const marketLabel = body.marketState ? `${body.marketCity}, ${body.marketState}` : body.marketCity;
+  const userPrompt = `Market: ${marketLabel}, ${body.marketRadiusMiles || 20}-mile radius.
 Audience: motivated single-family home sellers.
 Hook pattern to use: "${body.hookPattern}"
 Offer pattern to use: "${body.offerPattern}"
@@ -104,6 +114,7 @@ Generate one ad concept.`;
       .insert({
         campaign_template_id: body.campaignTemplateId || null,
         market_city: body.marketCity,
+        market_state: body.marketState || null,
         market_radius_miles: body.marketRadiusMiles,
         hook_pattern: body.hookPattern,
         offer_pattern: body.offerPattern,

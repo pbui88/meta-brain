@@ -3,7 +3,14 @@ import { getBenchmarks, generateAdFromPattern } from '../api';
 import type { CampaignJson, GeneratedAd } from '../types';
 import { button, card, colors, input, label, sectionTitle } from '../styles';
 
-const OFFER_OPTIONS = ['Cash offer', 'As-is purchase', 'Fast close', 'No fees'];
+export const OFFER_OPTIONS = [
+  'Cash offer',
+  'As-is purchase',
+  'Fast close',
+  'No fees',
+  'Retail buyer program',
+  'Novation',
+];
 const FORMAT_OPTIONS = [
   { value: 'VIDEO', label: 'Video Script' },
   { value: 'STATIC', label: 'Static Image' },

@@ -3,6 +3,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Architect } from './pages/Architect';
 import { Research } from './pages/Research';
 import { Benchmarks } from './pages/Benchmarks';
+import { BulkGenerate } from './pages/BulkGenerate';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/architect/:id" element={<Architect />} />
         <Route path="/research" element={<Research />} />
         <Route path="/benchmarks" element={<Benchmarks />} />
+        <Route path="/bulk-generate" element={<BulkGenerate />} />
       </Routes>
     </HashRouter>
   );

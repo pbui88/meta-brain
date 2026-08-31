@@ -147,6 +147,7 @@ export interface BenchmarksResult {
 export interface GeneratedAd {
   id?: string;
   market_city: string;
+  market_state?: string | null;
   market_radius_miles: number;
   hook_pattern: string;
   offer_pattern: string;
@@ -157,4 +158,10 @@ export interface GeneratedAd {
   video_script: string;
   lead_form_questions: LeadFormQuestion[];
   warning?: string;
+  created_at?: string;
+}
+
+export interface MarketLocation {
+  city: string;
+  state?: string;
 }
