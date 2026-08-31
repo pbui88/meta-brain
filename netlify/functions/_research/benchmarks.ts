@@ -9,6 +9,13 @@ interface AdRow {
   longevity_days: number | null;
 }
 
+function median(values: number[]): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
+}
+
 export function computeBenchmarks(ads: AdRow[]): BenchmarksResult {
   if (ads.length === 0) {
     return {
@@ -50,6 +57,8 @@ export function computeBenchmarks(ads: AdRow[]): BenchmarksResult {
       avgLongevityDays: v.longevities.length
         ? Math.round(v.longevities.reduce((a, b) => a + b, 0) / v.longevities.length)
         : null,
+      medianLongevityDays: median(v.longevities),
+      variationDensity: Number((v.count / Math.max(1, v.brands.size)).toFixed(2)),
     }))
     .sort((a, b) => b.count - a.count);
 

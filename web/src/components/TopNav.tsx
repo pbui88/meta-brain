@@ -3,9 +3,13 @@ import { colors, fonts } from '../styles';
 
 const LINKS = [
   { to: '/', label: 'Dashboard' },
-  { to: '/research', label: 'Research' },
-  { to: '/benchmarks', label: 'Benchmarks' },
-  { to: '/bulk-generate', label: 'Bulk Generate' },
+  { to: '/architect', label: 'Campaign Architect' },
+  { to: '/bulk-generate', label: 'Generate Ads' },
+  { to: '/research', label: 'Research Lab' },
+  { to: '/competitors', label: 'Competitors' },
+  { to: '/benchmarks', label: 'Patterns' },
+  { to: '/compliance', label: 'Compliance' },
+  { to: '/reports', label: 'Reports' },
 ];
 
 export function TopNav() {
@@ -48,7 +52,10 @@ export function TopNav() {
         </Link>
         <div style={{ display: 'flex', gap: 4 }}>
           {LINKS.map((l) => {
-            const active = l.to === '/' ? location.pathname === '/' || location.pathname === '' : location.pathname === l.to;
+            const active =
+              l.to === '/'
+                ? location.pathname === '/' || location.pathname === ''
+                : location.pathname === l.to || location.pathname.startsWith(`${l.to}/`);
             return (
               <Link
                 key={l.to}
