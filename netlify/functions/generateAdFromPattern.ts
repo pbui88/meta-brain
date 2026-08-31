@@ -1,6 +1,7 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import Anthropic from '@anthropic-ai/sdk';
 import { getSupabaseClient } from './_supabase';
+import { computeBenchmarks } from './_research/benchmarks';
 
 const jsonResponse = (statusCode: number, body: unknown) => ({
   statusCode,
@@ -41,6 +42,16 @@ You must comply with Meta's Special Ad Category (HOUSING) policy:
   financially", "foreclosure", "bad credit", "divorce", "bankruptcy", "eviction"). Focus on the PROPERTY and
   the OFFER, not the seller's personal situation.
 - Keep tone direct, benefit-focused, and compliant with housing ad transparency norms.
+You will be given a BENCHMARK CONTEXT block summarizing this account's own tracked competitor-ad data (top
+hooks, formats, CTAs, and average ad longevity from the Industry Research module). Treat it as your primary
+signal for what is currently working in this niche and weight it above generic assumptions:
+- Prefer hook angles and CTAs that already appear frequently and correlate with longer average longevity
+  (longer-running ads are a proxy for higher performance, since underperforming ads get turned off faster).
+- If the benchmark context is empty or thin, fall back to durable direct-response principles for high-conversion
+  real estate lead-gen: a concrete, specific hook in the first line; one clear offer; friction-reducing CTA;
+  and copy structured for a skimming reader (short lines, no jargon).
+- Do not fabricate specific statistics, dates, or named competitors that are not present in the benchmark
+  context provided to you.
 Respond with ONLY a JSON object matching this shape, no prose, no markdown fences:
 {
   "primary_text": string,
@@ -74,12 +85,43 @@ export const handler: Handler = async (event: HandlerEvent) => {
   }
 
   const marketLabel = body.marketState ? `${body.marketCity}, ${body.marketState}` : body.marketCity;
+
+  const supabase = getSupabaseClient();
+  let benchmarkContext = 'No competitor ad data tracked yet.';
+  try {
+    const { data: competitorAds } = await supabase
+      .from('competitor_ads')
+      .select('brand_name, format, cta, hook_text, funnel_stage, longevity_days');
+    const benchmarks = computeBenchmarks(competitorAds || []);
+    if (benchmarks.totalAds > 0) {
+      const topHooks = benchmarks.topHooks
+        .slice(0, 5)
+        .map((h) => `"${h.label}" (used by ${h.brands} brand${h.brands === 1 ? '' : 's'}, ${h.count} ads${h.avgLongevityDays != null ? `, avg ${h.avgLongevityDays}d live` : ''})`)
+        .join('; ');
+      const topCtas = benchmarks.ctaDistribution
+        .slice(0, 5)
+        .map((c) => `${c.cta} (${c.count})`)
+        .join(', ');
+      const topFormats = benchmarks.formatDistribution.map((f) => `${f.format} (${f.count})`).join(', ');
+      benchmarkContext = `${benchmarks.totalAds} tracked competitor ads. ${benchmarks.note}
+Top hooks: ${topHooks || 'none categorized yet'}
+Top CTAs: ${topCtas || 'none categorized yet'}
+Format distribution: ${topFormats || 'none categorized yet'}
+Average ad longevity: ${benchmarks.avgLongevityDays != null ? `${benchmarks.avgLongevityDays} days` : 'unknown'}`;
+    }
+  } catch {
+    // Benchmark lookup is best-effort; fall back to the default context string above.
+  }
+
   const userPrompt = `Market: ${marketLabel}, ${body.marketRadiusMiles || 20}-mile radius.
 Audience: motivated single-family home sellers.
 Hook pattern to use: "${body.hookPattern}"
 Offer pattern to use: "${body.offerPattern}"
 Ad format: ${body.format}
 Funnel stage: ${body.funnelStage || 'consideration'}
+
+BENCHMARK CONTEXT (this account's tracked competitor ad data):
+${benchmarkContext}
 
 Generate one ad concept.`;
 
@@ -108,7 +150,6 @@ Generate one ad concept.`;
       return jsonResponse(500, { error: 'Model response was not valid JSON.', raw: textBlock.text });
     }
 
-    const supabase = getSupabaseClient();
     const { data: saved, error } = await supabase
       .from('generated_ads')
       .insert({
