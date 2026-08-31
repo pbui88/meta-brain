@@ -5,3 +5,5 @@ web/dist/
 .env
 .env.local
 *.log
+supabase/.temp/
+*.tsbuildinfo

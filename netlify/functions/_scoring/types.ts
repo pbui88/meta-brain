@@ -1,8 +1,23 @@
+export interface LeadFormQuestion {
+  question: string;
+  type: 'TIMELINE' | 'PROPERTY_TYPE' | 'OCCUPANCY' | 'CUSTOM';
+}
+
 export interface CampaignJson {
   name: string;
+  market_city: string;
   special_ad_category: string;
+  objective: 'LEADS' | 'SALES' | string;
   adset: {
     market_radius_miles: number;
+    budget: {
+      type: 'DAILY' | 'LIFETIME';
+      amount: number;
+    };
+    schedule: {
+      start_date: string;
+      end_date?: string;
+    };
     optimization_event: string;
     placements: string;
   };
@@ -11,9 +26,11 @@ export interface CampaignJson {
     primary_text: string;
     headline: string;
     description: string;
+    video_script_snippet?: string;
     lead_form?: {
       type: string;
       sms_consent: boolean;
+      custom_questions: LeadFormQuestion[];
     };
   };
   tracking: {
