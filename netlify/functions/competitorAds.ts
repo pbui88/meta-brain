@@ -7,7 +7,7 @@ const jsonResponse = (statusCode: number, body: unknown) => ({
   body: JSON.stringify(body),
 });
 
-const EDITABLE_FIELDS = ['hook_text', 'offer_text', 'funnel_stage', 'format', 'cta', 'destination_url'] as const;
+const EDITABLE_FIELDS = ['hook_text', 'offer_text', 'funnel_stage', 'format', 'cta', 'destination_url', 'raw_source'] as const;
 
 export const handler: Handler = async (event: HandlerEvent) => {
   const supabase = getSupabaseClient();

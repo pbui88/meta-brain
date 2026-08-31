@@ -94,6 +94,7 @@ export interface ImportedAdInput {
   end_date?: string;
   impression_bucket?: string;
   destination_url?: string;
+  raw_source?: unknown;
 }
 
 export interface WatchlistEntry {
@@ -124,6 +125,7 @@ export interface CompetitorAd {
   end_date: string | null;
   longevity_days: number | null;
   impression_bucket: string | null;
+  raw_source?: Record<string, unknown> | null;
   created_at: string;
 }
 
@@ -132,6 +134,8 @@ export interface HookBreakdown {
   count: number;
   brands: number;
   avgLongevityDays: number | null;
+  medianLongevityDays?: number | null;
+  variationDensity?: number;
 }
 
 export interface BenchmarksResult {
@@ -164,4 +168,70 @@ export interface GeneratedAd {
 export interface MarketLocation {
   city: string;
   state?: string;
+}
+
+export interface AdConcept {
+  id: string;
+  researchInsight: string;
+  hook3sec: string;
+  script15to30sec: string;
+  shotList: string;
+  primaryText: string;
+  headline: string;
+  description: string;
+  cta: string;
+  leadFormIntro: string;
+  leadFormQuestions: LeadFormQuestion[];
+  smsConsentPlaceholder: string;
+  complianceNotes: string;
+  winnerMetric: string;
+}
+
+export interface GenerateAdsRequest {
+  marketCity: string;
+  marketState?: string;
+  marketRadiusMiles: number;
+  funnelStage: 'awareness' | 'consideration' | 'conversion';
+  destinationType: 'LEAD_FORM' | 'WEBSITE' | 'MESSENGER';
+  offerPattern: string;
+  format: string;
+  tone: string;
+  proofPoints: string;
+  hookPattern: string;
+}
+
+export interface PatternConfidenceScore {
+  score: number;
+  brandDiversity: number;
+  medianDaysLive: number | null;
+  variationDensity: number;
+  relevanceScore: number;
+  label: 'strong' | 'moderate' | 'weak' | 'insufficient';
+  explanation: string;
+}
+
+export interface ReportSection {
+  title: string;
+  content: string;
+}
+
+export interface Report {
+  id: string;
+  type: 'daily' | 'weekly';
+  generated_at: string;
+  title: string;
+  sections: ReportSection[];
+}
+
+export interface ComplianceScore {
+  total: number;
+  housing: number;
+  creativePolicy: number;
+  destinationConsent: number;
+  conversionSetup: number;
+  creativeQuality: number;
+  testQuality: number;
+  blockers: string[];
+  warnings: string[];
+  suggestions: string[];
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getBenchmarks, generateAdFromPattern, listGeneratedAds, deleteGeneratedAd } from '../api';
 import type { GeneratedAd, MarketLocation } from '../types';
 import { OFFER_OPTIONS } from '../components/GeneratePanel';
@@ -51,6 +51,7 @@ interface JobResult {
 }
 
 export function BulkGenerate() {
+  const [searchParams] = useSearchParams();
   const [marketsText, setMarketsText] = useState('');
   const [hookOptions, setHookOptions] = useState<string[]>([]);
   const [hookPattern, setHookPattern] = useState('');
@@ -79,13 +80,18 @@ export function BulkGenerate() {
       .then((b) => {
         const labels = b.topHooks.map((h) => h.label);
         setHookOptions(labels);
-        if (labels.length) setHookPattern(labels[0]);
+        const requestedHook = searchParams.get('hook');
+        if (requestedHook) {
+          setHookPattern(requestedHook);
+        } else if (labels.length) {
+          setHookPattern(labels[0]);
+        }
       })
       .catch(() => {
         // Benchmarks unavailable; fall back to manual hook entry below.
       });
     refreshHistory();
-  }, []);
+  }, [searchParams]);
 
   function toggleOffer(offer: string) {
     setSelectedOffers((prev) => (prev.includes(offer) ? prev.filter((o) => o !== offer) : [...prev, offer]));

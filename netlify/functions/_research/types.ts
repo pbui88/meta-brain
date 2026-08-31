@@ -40,6 +40,8 @@ export interface HookBreakdown {
   count: number;
   brands: number;
   avgLongevityDays: number | null;
+  medianLongevityDays?: number | null;
+  variationDensity?: number;
 }
 
 export interface BenchmarksResult {
