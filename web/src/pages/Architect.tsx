@@ -6,6 +6,7 @@ import type { CampaignJson, ScoreResult } from '../types';
 import { CampaignBuilder } from '../components/CampaignBuilder';
 import { ScoreCard } from '../components/ScoreCard';
 import { Checklist } from '../components/Checklist';
+import { GeneratePanel } from '../components/GeneratePanel';
 import { button, colors } from '../styles';
 
 export function Architect() {
@@ -17,7 +18,7 @@ export function Architect() {
   const [jsonText, setJsonText] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [result, setResult] = useState<ScoreResult | null>(null);
-  const [view, setView] = useState<'score' | 'checklist'>('score');
+  const [view, setView] = useState<'score' | 'checklist' | 'generate'>('score');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -137,6 +138,12 @@ export function Architect() {
             >
               Ads Manager Checklist
             </button>
+            <button
+              style={button(view === 'generate' ? 'primary' : 'secondary')}
+              onClick={() => setView('generate')}
+            >
+              Generate Ad
+            </button>
           </div>
 
           {view === 'score' &&
@@ -147,6 +154,8 @@ export function Architect() {
             ))}
 
           {view === 'checklist' && <Checklist campaign={campaign} />}
+
+          {view === 'generate' && <GeneratePanel campaign={campaign} onApply={setCampaign} />}
         </div>
       </div>
     </div>

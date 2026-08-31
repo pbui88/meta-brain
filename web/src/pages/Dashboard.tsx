@@ -37,6 +37,12 @@ export function Dashboard() {
           <button style={button('secondary')} disabled title="Coming soon">
             Upload Performance Report
           </button>
+          <Link to="/research">
+            <button style={button('secondary')}>Industry Research</button>
+          </Link>
+          <Link to="/benchmarks">
+            <button style={button('secondary')}>Benchmarks</button>
+          </Link>
           <Link to="/architect">
             <button style={button('primary')}>+ New Campaign Template</button>
           </Link>

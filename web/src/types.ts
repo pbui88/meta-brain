@@ -81,3 +81,80 @@ export interface TemplateRecord {
   created_at: string;
   updated_at: string;
 }
+
+export interface ImportedAdInput {
+  brand_name: string;
+  page_source?: string;
+  country?: string;
+  format?: string;
+  primary_text?: string;
+  headline?: string;
+  cta?: string;
+  start_date?: string;
+  end_date?: string;
+  impression_bucket?: string;
+  destination_url?: string;
+}
+
+export interface WatchlistEntry {
+  id: string;
+  brand_name: string;
+  page_source: string | null;
+  notes: string | null;
+  last_imported_at: string | null;
+  ad_count: number;
+  created_at: string;
+}
+
+export interface CompetitorAd {
+  id: string;
+  watchlist_id: string | null;
+  brand_name: string;
+  page_source: string | null;
+  country: string | null;
+  format: string | null;
+  hook_text: string | null;
+  offer_text: string | null;
+  primary_text: string | null;
+  headline: string | null;
+  cta: string | null;
+  funnel_stage: 'awareness' | 'consideration' | 'conversion' | null;
+  destination_url: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  longevity_days: number | null;
+  impression_bucket: string | null;
+  created_at: string;
+}
+
+export interface HookBreakdown {
+  label: string;
+  count: number;
+  brands: number;
+  avgLongevityDays: number | null;
+}
+
+export interface BenchmarksResult {
+  totalAds: number;
+  topHooks: HookBreakdown[];
+  formatDistribution: Array<{ format: string; count: number }>;
+  ctaDistribution: Array<{ cta: string; count: number }>;
+  funnelStageDistribution: Record<string, number>;
+  avgLongevityDays: number | null;
+  note: string;
+}
+
+export interface GeneratedAd {
+  id?: string;
+  market_city: string;
+  market_radius_miles: number;
+  hook_pattern: string;
+  offer_pattern: string;
+  format: string;
+  primary_text: string;
+  headline: string;
+  description: string;
+  video_script: string;
+  lead_form_questions: LeadFormQuestion[];
+  warning?: string;
+}

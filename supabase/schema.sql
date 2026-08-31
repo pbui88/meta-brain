@@ -72,20 +72,35 @@ create index if not exists idx_template_change_links_event
   on template_change_links (meta_change_event_id);
 
 -- =========================================================
--- 4. competitor_ads + creative_patterns
+-- 4. competitor_watchlist + competitor_ads + creative_patterns
 -- =========================================================
+create table if not exists competitor_watchlist (
+  id uuid primary key default gen_random_uuid(),
+  brand_name text not null,
+  page_source text,
+  notes text,
+  last_imported_at timestamptz,
+  ad_count integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists competitor_ads (
   id uuid primary key default gen_random_uuid(),
+  watchlist_id uuid references competitor_watchlist (id) on delete set null,
   brand_name text not null,
   page_source text,
   country text,
   format text,
   hook_text text,
+  offer_text text,
   primary_text text,
   headline text,
   cta text,
+  funnel_stage text check (funnel_stage in ('awareness', 'consideration', 'conversion') or funnel_stage is null),
+  destination_url text,
   start_date date,
   end_date date,
+  longevity_days integer,
   impression_bucket text,
   raw_source jsonb,
   created_at timestamptz not null default now()
@@ -93,6 +108,8 @@ create table if not exists competitor_ads (
 
 create index if not exists idx_competitor_ads_brand_name
   on competitor_ads (brand_name);
+create index if not exists idx_competitor_ads_watchlist_id
+  on competitor_ads (watchlist_id);
 
 create table if not exists creative_patterns (
   id uuid primary key default gen_random_uuid(),
@@ -100,6 +117,7 @@ create table if not exists creative_patterns (
   description text not null,
   evidence jsonb not null default '[]'::jsonb, -- list of competitor_ads ids
   recommended_use text,
+  confidence text check (confidence in ('low', 'medium', 'high') or confidence is null),
   created_at timestamptz not null default now()
 );
 
@@ -133,6 +151,26 @@ create table if not exists performance_metrics (
 
 create index if not exists idx_performance_metrics_import_id
   on performance_metrics (performance_import_id);
+
+-- =========================================================
+-- 6. generated_ads (output of the ad generation engine)
+-- =========================================================
+create table if not exists generated_ads (
+  id uuid primary key default gen_random_uuid(),
+  campaign_template_id uuid references campaign_templates (id) on delete set null,
+  market_city text,
+  market_radius_miles numeric,
+  hook_pattern text,
+  offer_pattern text,
+  format text,
+  primary_text text,
+  headline text,
+  description text,
+  video_script text,
+  lead_form_questions jsonb not null default '[]'::jsonb,
+  source_pattern_ids jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
 
 -- =========================================================
 -- updated_at trigger for campaign_templates
