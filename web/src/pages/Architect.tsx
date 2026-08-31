@@ -86,10 +86,10 @@ export function Architect() {
             <input type="checkbox" checked={advanced} onChange={(e) => setAdvanced(e.target.checked)} />
             Advanced (JSON)
           </label>
-          <button style={button('secondary')} onClick={save} disabled={saving}>
+          <button style={button('secondary', saving)} onClick={save} disabled={saving}>
             {saving ? 'Saving...' : id ? 'Update Template' : 'Save Template'}
           </button>
-          <button style={button('primary')} onClick={runScore} disabled={loading}>
+          <button style={button('primary', loading)} onClick={runScore} disabled={loading}>
             {loading ? 'Scoring...' : 'Run Score'}
           </button>
         </div>

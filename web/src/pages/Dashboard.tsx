@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { listTemplates } from '../api';
+import { listTemplates, deleteTemplate } from '../api';
 import type { TemplateSummary } from '../types';
 import { button, card, chip, colors } from '../styles';
 
@@ -17,11 +17,23 @@ export function Dashboard() {
   const [templates, setTemplates] = useState<TemplateSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  function refresh() {
     listTemplates()
       .then(setTemplates)
       .catch((err) => setError(err.message));
-  }, []);
+  }
+
+  useEffect(refresh, []);
+
+  async function handleDelete(t: TemplateSummary) {
+    if (!window.confirm(`Delete "${t.name}"? This cannot be undone.`)) return;
+    try {
+      await deleteTemplate(t.id);
+      refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete.');
+    }
+  }
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', padding: 24, maxWidth: 1100, margin: '0 auto' }}>
@@ -31,10 +43,10 @@ export function Dashboard() {
           <div style={{ color: colors.muted }}>Campaign Templates Dashboard</div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button style={button('secondary')} disabled title="Coming soon">
+          <button style={button('secondary', true)} disabled title="Coming soon">
             View Meta Changes
           </button>
-          <button style={button('secondary')} disabled title="Coming soon">
+          <button style={button('secondary', true)} disabled title="Coming soon">
             Upload Performance Report
           </button>
           <Link to="/research">
@@ -83,6 +95,22 @@ export function Dashboard() {
                     <div style={{ fontSize: 20, fontWeight: 700 }}>{t.latest_total_score}</div>
                   )}
                   {statusChip(t)}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDelete(t);
+                    }}
+                    style={{
+                      border: 'none',
+                      background: 'none',
+                      color: colors.bad,
+                      cursor: 'pointer',
+                      fontSize: 12,
+                    }}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </Link>

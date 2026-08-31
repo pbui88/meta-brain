@@ -44,15 +44,19 @@ export const sectionTitle: CSSProperties = {
   marginBottom: 12,
 };
 
-export const button = (variant: 'primary' | 'secondary' | 'danger' = 'primary'): CSSProperties => ({
+export const button = (
+  variant: 'primary' | 'secondary' | 'danger' = 'primary',
+  disabled = false
+): CSSProperties => ({
   padding: '8px 16px',
   borderRadius: 6,
   border: variant === 'secondary' ? `1px solid ${colors.border}` : 'none',
   background: variant === 'primary' ? colors.primary : variant === 'danger' ? colors.bad : '#fff',
   color: variant === 'secondary' ? colors.text : '#fff',
-  cursor: 'pointer',
+  cursor: disabled ? 'not-allowed' : 'pointer',
   fontSize: 14,
   fontWeight: 600,
+  opacity: disabled ? 0.45 : 1,
 });
 
 export const chip = (variant: 'good' | 'warn' | 'bad' | 'neutral'): CSSProperties => ({

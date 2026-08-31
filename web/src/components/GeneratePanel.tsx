@@ -117,7 +117,11 @@ export function GeneratePanel({ campaign, onApply }: Props) {
         ))}
       </select>
 
-      <button style={{ ...button('primary'), width: '100%' }} onClick={generate} disabled={loading || !hookPattern}>
+      <button
+        style={{ ...button('primary', loading || !hookPattern), width: '100%' }}
+        onClick={generate}
+        disabled={loading || !hookPattern}
+      >
         {loading ? 'Generating...' : `Generate ad for ${campaign.market_city || 'your market'}`}
       </button>
 
