@@ -7,7 +7,8 @@ import { CampaignBuilder } from '../components/CampaignBuilder';
 import { ScoreCard } from '../components/ScoreCard';
 import { Checklist } from '../components/Checklist';
 import { GeneratePanel } from '../components/GeneratePanel';
-import { button, colors } from '../styles';
+import { TopNav } from '../components/TopNav';
+import { button, colors, eyebrow, fonts, page, pageTitle } from '../styles';
 
 export function Architect() {
   const { id } = useParams();
@@ -73,89 +74,110 @@ export function Architect() {
   }
 
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', padding: 24, maxWidth: 1300, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-        <div>
-          <Link to="/" style={{ fontSize: 13, color: colors.primary }}>
-            ← Dashboard
-          </Link>
-          <h1 style={{ margin: '4px 0' }}>Campaign Architect</h1>
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <label style={{ fontSize: 13, color: colors.muted, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <input type="checkbox" checked={advanced} onChange={(e) => setAdvanced(e.target.checked)} />
-            Advanced (JSON)
-          </label>
-          <button style={button('secondary', saving)} onClick={save} disabled={saving}>
-            {saving ? 'Saving...' : id ? 'Update Template' : 'Save Template'}
-          </button>
-          <button style={button('primary', loading)} onClick={runScore} disabled={loading}>
-            {loading ? 'Scoring...' : 'Run Score'}
-          </button>
-        </div>
-      </div>
-
-      {requestError && <div style={{ color: colors.bad, marginBottom: 16 }}>{requestError}</div>}
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-        <div>
-          {advanced ? (
-            <div>
-              <textarea
-                value={jsonText}
-                onChange={(e) => setJsonText(e.target.value)}
-                onBlur={applyJsonText}
-                spellCheck={false}
-                style={{
-                  width: '100%',
-                  height: 640,
-                  fontFamily: 'ui-monospace, monospace',
-                  fontSize: 13,
-                  padding: 12,
-                  border: `1px solid ${colors.border}`,
-                  borderRadius: 8,
-                  boxSizing: 'border-box',
-                }}
-              />
-              {jsonError && <div style={{ color: colors.bad, marginTop: 8, fontSize: 13 }}>{jsonError}</div>}
-            </div>
-          ) : (
-            <CampaignBuilder campaign={campaign} onChange={setCampaign} />
-          )}
-        </div>
-
-        <div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <button
-              style={button(view === 'score' ? 'primary' : 'secondary')}
-              onClick={() => setView('score')}
+    <div>
+      <TopNav />
+      <div style={{ ...page, maxWidth: 1320 }} className="fade-up">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            marginBottom: 20,
+            flexWrap: 'wrap',
+            gap: 16,
+          }}
+        >
+          <div>
+            <Link to="/" style={{ ...eyebrow, textDecoration: 'none' }}>
+              ← Dashboard
+            </Link>
+            <h1 style={pageTitle}>Campaign Architect</h1>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <label
+              style={{
+                fontFamily: fonts.mono,
+                fontSize: 11.5,
+                color: colors.muted,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
             >
-              Scorecard
+              <input type="checkbox" checked={advanced} onChange={(e) => setAdvanced(e.target.checked)} />
+              Advanced (JSON)
+            </label>
+            <button style={button('secondary', saving)} onClick={save} disabled={saving}>
+              {saving ? 'Saving…' : id ? 'Update Template' : 'Save Template'}
             </button>
-            <button
-              style={button(view === 'checklist' ? 'primary' : 'secondary')}
-              onClick={() => setView('checklist')}
-            >
-              Ads Manager Checklist
-            </button>
-            <button
-              style={button(view === 'generate' ? 'primary' : 'secondary')}
-              onClick={() => setView('generate')}
-            >
-              Generate Ad
+            <button style={button('primary', loading)} onClick={runScore} disabled={loading}>
+              {loading ? 'Scoring…' : 'Run Score'}
             </button>
           </div>
+        </div>
 
-          {view === 'score' &&
-            (result ? (
-              <ScoreCard result={result} />
+        {requestError && <div style={{ color: colors.bad, marginBottom: 16 }}>{requestError}</div>}
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          <div>
+            {advanced ? (
+              <div>
+                <textarea
+                  value={jsonText}
+                  onChange={(e) => setJsonText(e.target.value)}
+                  onBlur={applyJsonText}
+                  spellCheck={false}
+                  style={{
+                    width: '100%',
+                    height: 640,
+                    fontFamily: fonts.mono,
+                    fontSize: 13,
+                    padding: 14,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: 10,
+                    boxSizing: 'border-box',
+                    background: colors.paper,
+                  }}
+                />
+                {jsonError && <div style={{ color: colors.bad, marginTop: 8, fontSize: 13 }}>{jsonError}</div>}
+              </div>
             ) : (
-              <div style={{ color: colors.muted }}>Run a score to see results here.</div>
-            ))}
+              <CampaignBuilder campaign={campaign} onChange={setCampaign} />
+            )}
+          </div>
 
-          {view === 'checklist' && <Checklist campaign={campaign} />}
+          <div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+              <button style={button(view === 'score' ? 'primary' : 'secondary')} onClick={() => setView('score')}>
+                Scorecard
+              </button>
+              <button
+                style={button(view === 'checklist' ? 'primary' : 'secondary')}
+                onClick={() => setView('checklist')}
+              >
+                Checklist
+              </button>
+              <button
+                style={button(view === 'generate' ? 'primary' : 'secondary')}
+                onClick={() => setView('generate')}
+              >
+                Generate Ad
+              </button>
+            </div>
 
-          {view === 'generate' && <GeneratePanel campaign={campaign} onApply={setCampaign} />}
+            {view === 'score' &&
+              (result ? (
+                <ScoreCard result={result} />
+              ) : (
+                <div style={{ color: colors.muted, fontSize: 14 }}>Run a score to see results here.</div>
+              ))}
+
+            {view === 'checklist' && <Checklist campaign={campaign} />}
+
+            {view === 'generate' && <GeneratePanel campaign={campaign} onApply={setCampaign} />}
+          </div>
         </div>
       </div>
     </div>

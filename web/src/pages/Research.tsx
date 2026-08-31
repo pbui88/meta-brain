@@ -11,7 +11,8 @@ import {
   deleteCompetitorAd,
 } from '../api';
 import type { WatchlistEntry, CompetitorAd, ImportedAdInput } from '../types';
-import { button, card, colors, input, label, sectionTitle } from '../styles';
+import { TopNav } from '../components/TopNav';
+import { button, card, colors, eyebrow, fonts, input, label, page, pageTitle, sectionTitle } from '../styles';
 
 function parseImportText(text: string): ImportedAdInput[] {
   const trimmed = text.trim();
@@ -110,23 +111,34 @@ export function Research() {
   }
 
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', padding: 24, maxWidth: 1300, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-        <div>
-          <Link to="/" style={{ fontSize: 13, color: colors.primary }}>
-            ← Dashboard
+    <div>
+      <TopNav />
+      <div style={{ ...page, maxWidth: 1320 }} className="fade-up">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            marginBottom: 20,
+            flexWrap: 'wrap',
+            gap: 16,
+          }}
+        >
+          <div>
+            <Link to="/" style={{ ...eyebrow, textDecoration: 'none' }}>
+              ← Dashboard
+            </Link>
+            <h1 style={pageTitle}>Industry Research</h1>
+          </div>
+          <Link to="/benchmarks">
+            <button style={button('secondary')}>View Patterns &amp; Benchmarks →</button>
           </Link>
-          <h1 style={{ margin: '4px 0' }}>Industry Research</h1>
         </div>
-        <Link to="/benchmarks">
-          <button style={button('secondary')}>View Patterns & Benchmarks →</button>
-        </Link>
-      </div>
 
-      {error && <div style={{ color: colors.bad, marginBottom: 12 }}>{error}</div>}
-      {status && <div style={{ color: colors.good, marginBottom: 12 }}>{status}</div>}
+        {error && <div style={{ color: colors.bad, marginBottom: 12 }}>{error}</div>}
+        {status && <div style={{ color: colors.good, marginBottom: 12 }}>{status}</div>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 20 }}>
         <div>
           {/* Watchlist */}
           <div style={{ ...card, marginBottom: 16 }}>
@@ -168,9 +180,9 @@ export function Research() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '6px 8px',
-                  borderRadius: 6,
+                  borderRadius: 8,
                   cursor: 'pointer',
-                  fontWeight: selectedWatchlistId === w.id ? 700 : 400,
+                  fontWeight: selectedWatchlistId === w.id ? 600 : 400,
                   background: selectedWatchlistId === w.id ? colors.bg : 'transparent',
                 }}
               >
@@ -235,7 +247,7 @@ export function Research() {
             {ads.map((ad) => (
               <div key={ad.id} style={card}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div style={{ fontWeight: 600 }}>{ad.brand_name}</div>
+                  <div style={{ fontFamily: fonts.display, fontWeight: 600, fontSize: 15.5 }}>{ad.brand_name}</div>
                   <button
                     onClick={() => deleteCompetitorAd(ad.id).then(() => refreshAll(selectedWatchlistId))}
                     style={{ border: 'none', background: 'none', color: colors.bad, cursor: 'pointer', fontSize: 12 }}
@@ -290,6 +302,7 @@ export function Research() {
             ))}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
